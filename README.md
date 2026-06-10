@@ -4,11 +4,11 @@ Interactive Streamlit app for finding clustered problem themes in IT ticket expo
 
 ## Live Demo
 
-GitHub Pages serves a standalone interactive demo generated from `it_tickets_large.csv`:
+GitHub Pages serves a pruned standalone interactive demo generated from `it_tickets_large.csv`:
 
 https://skippy5.github.io/it-ticket-word-network/
 
-The hosted page is static HTML. Run the Streamlit app locally for uploads, filters, parameter tuning, exports, and regenerated networks.
+The hosted page is static HTML with fewer nodes and stronger edges so it stays readable on small screens. Use `network-large.html` or the Streamlit app locally for the fuller 90-node graph, uploads, filters, parameter tuning, exports, and regenerated networks.
 
 ## Setup
 

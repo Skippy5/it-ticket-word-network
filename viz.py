@@ -66,16 +66,19 @@ def build_pyvis_html(
         )
         net.add_edge(source, target, value=max(1, weight), title=title)
 
-    net.set_options(
-        """
-        {
-          "interaction": {"hover": true, "navigationButtons": true, "multiselect": false},
-          "nodes": {"borderWidth": 1, "font": {"size": 18, "face": "Inter"}},
-          "edges": {"smooth": {"type": "dynamic"}, "color": {"color": "#9ca3af", "highlight": "#111827"}},
-          "physics": {"stabilization": {"iterations": 160}}
-        }
-        """
-    )
+    options = {
+        "interaction": {"hover": True, "navigationButtons": True, "multiselect": False},
+        "nodes": {"borderWidth": 1, "font": {"size": 18, "face": "Inter"}},
+        "edges": {
+            "smooth": {"type": "dynamic"},
+            "color": {"color": "#9ca3af", "highlight": "#111827"},
+        },
+        "physics": {
+            "enabled": physics,
+            "stabilization": {"enabled": True, "iterations": 260, "fit": True},
+        },
+    }
+    net.set_options(json.dumps(options))
     html = net.generate_html(notebook=False)
 
     node_evidence = {
@@ -97,6 +100,19 @@ def build_pyvis_html(
         "incidents": incident_lookup,
     }
     panel = f"""
+    <style>
+    @media (max-width: 760px) {{
+      #evidence-panel {{
+        position: fixed !important;
+        left: 8px !important;
+        right: 8px !important;
+        top: auto !important;
+        bottom: 8px !important;
+        width: auto !important;
+        max-height: 34vh !important;
+      }}
+    }}
+    </style>
     <div id="evidence-panel" style="position:fixed;right:18px;top:18px;width:min(430px,34vw);max-height:82vh;overflow:auto;background:#ffffff;border:1px solid #d1d5db;border-radius:8px;padding:14px 16px;box-shadow:0 10px 30px rgba(15,23,42,.18);font-family:Inter,Arial,sans-serif;font-size:13px;color:#111827;z-index:9999">
       <div style="font-weight:700;margin-bottom:6px">Incident evidence</div>
       <div id="evidence-body">Click a node or edge to list source incidents.</div>
@@ -120,6 +136,7 @@ def build_pyvis_html(
     }}
     setTimeout(() => {{
       if (typeof network === "undefined") return;
+      network.once("stabilized", function() {{ network.setOptions({{ physics: false }}); }});
       network.on("click", function(params) {{
         if (params.nodes && params.nodes.length) {{
           const term = params.nodes[0];
